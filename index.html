@@ -419,7 +419,7 @@ tbody tr:hover { background:var(--surface2); }
 <script>
 // ── SUPABASE ──
 const SUPABASE_URL = 'https://grgfpptjxnpcumaswoot.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdyZ2ZwcHRqeG5wY3VtYXN3b290Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNTY4NDQsImV4cCI6MjA5MTczMjg0NH0.fzhNwAhoHRUF2OVQgBolHvroEKQylD_fAWJmxdfslAI'; // ← 여기에 anon key 붙여넣기
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdyZ2ZwcHRqeG5wY3VtYXN3b290Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNTY4NDQsImV4cCI6MjA5MTczMjg0NH0.fzhNwAhoHRUF2OVQgBolHvroEKQylD_fAWJmxdfslAI_KEY'; // ← 여기에 anon key 붙여넣기
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser = null;
@@ -467,6 +467,11 @@ async function initApp(user) {
     ['btnAddRevenue','btnAddPurchase','btnAddExpense','btnAddSalary'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.style.display = 'none';
+    });
+  } else {
+    ['btnAddRevenue','btnAddPurchase','btnAddExpense','btnAddSalary'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'flex';
     });
   }
 
