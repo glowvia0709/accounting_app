@@ -4,8 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>회계 관리 시스템</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=DM+Serif+Display:ital@1&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #0F1117;
@@ -36,516 +35,440 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans KR',sans-
 }
 .login-logo { font-family:'DM Serif Display',serif; font-size:28px; text-align:center; margin-bottom:8px; }
 .login-logo span { color:var(--accent); font-style:italic; }
-.login-sub { text-align:center; font-size:13px; color:var(--text2); margin-bottom:36px; }
-.form-group { margin-bottom:16px; }
-.form-label { font-size:12px; color:var(--text2); margin-bottom:6px; display:block; letter-spacing:0.5px; }
+.login-sub { text-align:center; color:var(--text2); font-size:14px; margin-bottom:32px; }
+.form-label { font-size:13px; color:var(--text2); margin-bottom:6px; display:block; }
 .form-input {
-  width:100%; padding:12px 16px; background:var(--surface2); border:1px solid var(--border);
-  border-radius:10px; color:var(--text); font-family:inherit; font-size:14px; outline:none;
-  transition:border 0.2s;
+  width:100%; background:var(--surface2); border:1px solid var(--border);
+  border-radius:10px; padding:12px 16px; color:var(--text); font-size:14px;
+  font-family:inherit; margin-bottom:16px; transition:border-color 0.2s;
 }
-.form-input:focus { border-color:var(--accent); }
-.form-input::placeholder { color:var(--text3); }
+.form-input:focus { outline:none; border-color:var(--accent); }
 .btn-primary {
-  width:100%; padding:14px; background:var(--accent); border:none; border-radius:10px;
-  color:white; font-family:inherit; font-size:14px; font-weight:600; cursor:pointer;
-  margin-top:8px; transition:opacity 0.2s;
+  width:100%; background:var(--accent2); border:none; border-radius:10px;
+  padding:14px; color:#fff; font-size:15px; font-weight:700;
+  font-family:inherit; cursor:pointer; transition:opacity 0.2s;
 }
 .btn-primary:hover { opacity:0.85; }
-.login-error { color:var(--red); font-size:12px; text-align:center; margin-top:10px; display:none; }
+.error-msg { color:var(--red); font-size:13px; margin-bottom:12px; display:none; text-align:center; }
 
-/* ── APP LAYOUT ── */
+/* ── LAYOUT ── */
 #appPage { display:none; }
+.app-layout { display:flex; min-height:100vh; }
+
+/* ── SIDEBAR ── */
 .sidebar {
-  position:fixed; top:0; left:0; width:220px; height:100vh;
-  background:var(--surface); border-right:1px solid var(--border);
-  display:flex; flex-direction:column; z-index:100;
+  width:220px; min-width:220px; background:var(--surface);
+  border-right:1px solid var(--border); display:flex;
+  flex-direction:column; padding:24px 0; position:sticky; top:0; height:100vh;
 }
-.sidebar-logo { padding:24px 20px 20px; border-bottom:1px solid var(--border); }
-.sidebar-logo-title { font-family:'DM Serif Display',serif; font-size:18px; }
+.sidebar-logo { padding:0 20px 20px; border-bottom:1px solid var(--border); margin-bottom:12px; }
+.sidebar-logo-title { font-family:'DM Serif Display',serif; font-size:20px; }
 .sidebar-logo-title span { color:var(--accent); font-style:italic; }
-.sidebar-user { padding:16px 20px; border-bottom:1px solid var(--border); }
-.user-name { font-size:13px; font-weight:600; }
-.user-role {
-  font-size:10px; padding:2px 8px; border-radius:100px; font-weight:700;
-  margin-top:4px; display:inline-block;
-}
-.role-admin { background:rgba(79,142,247,0.2); color:var(--accent); }
-.role-employee { background:rgba(34,197,94,0.2); color:var(--green); }
-.sidebar-nav { flex:1; padding:12px 0; overflow-y:auto; }
-.nav-section { padding:8px 20px 4px; font-size:10px; color:var(--text3); letter-spacing:1.5px; text-transform:uppercase; }
+.sidebar-user { padding:12px 20px 16px; border-bottom:1px solid var(--border); margin-bottom:8px; }
+.user-name { font-weight:700; font-size:15px; margin-bottom:4px; }
+.user-role { font-size:11px; padding:2px 8px; border-radius:20px; display:inline-block; }
+.role-admin { background:rgba(124,92,252,0.2); color:var(--accent2); }
+.sidebar-nav { flex:1; padding:8px 12px; overflow-y:auto; }
+.nav-section { font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase;
+  letter-spacing:0.08em; padding:12px 8px 6px; }
 .nav-item {
-  display:flex; align-items:center; gap:10px; padding:10px 20px;
-  font-size:13px; color:var(--text2); cursor:pointer; transition:all 0.15s;
-  border-left:3px solid transparent;
+  display:flex; align-items:center; gap:10px; padding:10px 12px;
+  border-radius:10px; cursor:pointer; font-size:14px; color:var(--text2);
+  transition:all 0.15s; margin-bottom:2px;
 }
-.nav-item:hover { color:var(--text); background:var(--surface2); }
-.nav-item.active { color:var(--accent); background:rgba(79,142,247,0.08); border-left-color:var(--accent); }
-.nav-icon { font-size:16px; width:20px; text-align:center; }
+.nav-item:hover { background:var(--surface2); color:var(--text); }
+.nav-item.active { background:rgba(79,142,247,0.15); color:var(--accent); font-weight:600; }
+.nav-icon { font-size:16px; }
 .sidebar-footer { padding:16px 20px; border-top:1px solid var(--border); }
 .btn-logout {
-  width:100%; padding:10px; background:transparent; border:1px solid var(--border);
-  border-radius:8px; color:var(--text2); font-family:inherit; font-size:13px; cursor:pointer;
-  transition:all 0.2s;
+  width:100%; background:transparent; border:1px solid var(--border);
+  border-radius:8px; padding:8px; color:var(--text2); font-size:13px;
+  font-family:inherit; cursor:pointer; transition:all 0.15s;
 }
-.btn-logout:hover { border-color:var(--red); color:var(--red); }
+.btn-logout:hover { background:var(--surface2); color:var(--text); }
 
-.main-content { margin-left:220px; padding:28px; min-height:100vh; }
+/* ── MAIN ── */
+.main-content { flex:1; padding:32px; overflow-x:auto; }
 .page { display:none; }
-.page.active { display:block; animation:fadeIn 0.3s ease; }
-@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.page.active { display:block; }
 
 /* ── PAGE HEADER ── */
-.page-header { margin-bottom:24px; }
-.page-title { font-family:'DM Serif Display',serif; font-size:26px; }
-.page-sub { font-size:13px; color:var(--text2); margin-top:4px; }
+.page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:12px; }
+.page-title { font-size:22px; font-weight:700; }
+.page-subtitle { font-size:13px; color:var(--text2); margin-top:2px; }
+
+/* ── MONTH PICKER ── */
+.month-picker-wrap { display:flex; align-items:center; gap:8px; }
+input[type="month"] {
+  background:var(--surface); border:1px solid var(--border); border-radius:8px;
+  padding:8px 12px; color:var(--text); font-size:13px; font-family:inherit; cursor:pointer;
+}
+input[type="month"]:focus { outline:none; border-color:var(--accent); }
 
 /* ── STATS ── */
-.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
-.stat-card {
-  background:var(--surface); border:1px solid var(--border); border-radius:14px;
-  padding:20px; position:relative; overflow:hidden;
-}
-.stat-card::before {
-  content:''; position:absolute; top:0; left:0; right:0; height:2px;
-}
-.stat-card.green::before { background:var(--green); }
-.stat-card.red::before { background:var(--red); }
-.stat-card.blue::before { background:var(--accent); }
-.stat-card.yellow::before { background:var(--yellow); }
-.stat-label { font-size:11px; color:var(--text2); letter-spacing:0.5px; margin-bottom:8px; }
-.stat-value { font-family:'DM Serif Display',serif; font-size:24px; }
-.stat-value.green { color:var(--green); }
-.stat-value.red { color:var(--red); }
-.stat-value.blue { color:var(--accent); }
-.stat-value.yellow { color:var(--yellow); }
-.stat-icon { position:absolute; right:16px; top:16px; font-size:24px; opacity:0.2; }
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+.stat-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px; }
+.stat-label { font-size:12px; color:var(--text2); margin-bottom:8px; }
+.stat-value { font-size:22px; font-weight:700; }
+.stat-icon { font-size:24px; margin-bottom:8px; }
 
 /* ── TABLE ── */
-.card { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; margin-bottom:20px; }
-.card-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
-.card-title { font-size:14px; font-weight:600; }
-.table-wrap { overflow-x:auto; }
-table { width:100%; border-collapse:collapse; font-size:13px; }
-thead th { padding:12px 16px; text-align:left; font-size:11px; color:var(--text2); letter-spacing:0.5px; text-transform:uppercase; border-bottom:1px solid var(--border); font-weight:500; }
-tbody td { padding:12px 16px; border-bottom:1px solid var(--border); color:var(--text2); }
-tbody td:first-child { color:var(--text); }
-tbody tr:last-child td { border-bottom:none; }
-tbody tr:hover { background:var(--surface2); }
-.badge {
-  padding:3px 10px; border-radius:100px; font-size:11px; font-weight:600; display:inline-block;
-}
-.badge-green { background:rgba(34,197,94,0.15); color:var(--green); }
-.badge-red { background:rgba(239,68,68,0.15); color:var(--red); }
-.badge-blue { background:rgba(79,142,247,0.15); color:var(--accent); }
-.badge-yellow { background:rgba(245,158,11,0.15); color:var(--yellow); }
+.table-wrap { background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+.table-header { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--border); }
+.table-title { font-size:15px; font-weight:600; }
+.table-total { font-size:13px; color:var(--text2); }
+.table-total span { color:var(--text); font-weight:700; }
+table { width:100%; border-collapse:collapse; }
+th { padding:12px 16px; text-align:left; font-size:12px; color:var(--text2); font-weight:600;
+  background:var(--surface2); border-bottom:1px solid var(--border); }
+td { padding:12px 16px; font-size:13px; border-bottom:1px solid var(--border); }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:rgba(255,255,255,0.02); }
 .amount-pos { color:var(--green); font-weight:600; }
 .amount-neg { color:var(--red); font-weight:600; }
-
-/* ── FORM ── */
-.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-.form-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
-.form-select {
-  width:100%; padding:10px 14px; background:var(--surface2); border:1px solid var(--border);
-  border-radius:10px; color:var(--text); font-family:inherit; font-size:13px; outline:none;
-}
-.form-select:focus { border-color:var(--accent); }
-.btn-sm {
-  padding:8px 16px; border-radius:8px; font-size:12px; font-weight:600;
-  cursor:pointer; border:none; font-family:inherit; transition:all 0.2s;
-}
-.btn-accent { background:var(--accent); color:white; }
-.btn-accent:hover { opacity:0.85; }
-.btn-outline { background:transparent; border:1px solid var(--border); color:var(--text2); }
-.btn-outline:hover { border-color:var(--accent); color:var(--accent); }
-.btn-danger { background:transparent; border:1px solid var(--border); color:var(--text3); font-size:11px; padding:4px 10px; }
-.btn-danger:hover { border-color:var(--red); color:var(--red); }
-
-/* ── MONTH FILTER ── */
-.filter-bar { display:flex; gap:10px; align-items:center; margin-bottom:20px; flex-wrap:wrap; }
-.filter-bar input, .filter-bar select {
-  padding:8px 14px; background:var(--surface); border:1px solid var(--border);
-  border-radius:8px; color:var(--text); font-family:inherit; font-size:13px; outline:none;
-}
-.filter-bar input:focus, .filter-bar select:focus { border-color:var(--accent); }
-
-/* ── MODAL ── */
-.modal-bg {
-  position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200;
-  display:none; align-items:center; justify-content:center;
-}
-.modal-bg.open { display:flex; }
-.modal {
-  background:var(--surface); border:1px solid var(--border); border-radius:16px;
-  padding:28px; width:100%; max-width:480px;
-  box-shadow:0 32px 80px rgba(0,0,0,0.5);
-}
-.modal-title { font-size:16px; font-weight:600; margin-bottom:20px; }
-.modal-footer { display:flex; gap:10px; margin-top:20px; justify-content:flex-end; }
-
-/* ── CHART BAR ── */
-.chart-bar-wrap { display:flex; align-items:flex-end; gap:8px; height:120px; margin:16px 0 8px; }
-.chart-bar-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
-.chart-bar { width:100%; border-radius:4px 4px 0 0; min-height:4px; transition:height 0.4s; }
-.chart-label { font-size:10px; color:var(--text2); }
-
-/* ── EMPTY STATE ── */
-.empty { text-align:center; padding:48px 20px; color:var(--text3); }
-.empty-icon { font-size:40px; margin-bottom:12px; opacity:0.4; }
-
-/* ── RESPONSIVE ── */
-@media(max-width:768px) {
-  .sidebar { transform:translateX(-220px); transition:transform 0.3s; }
-  .main-content { margin-left:0; padding:20px 16px; }
-  .stats-grid { grid-template-columns:1fr 1fr; }
-  .form-grid, .form-grid-3 { grid-template-columns:1fr; }
-}
-
+.badge { font-size:11px; padding:3px 8px; border-radius:20px; font-weight:600; }
+.badge-green { background:rgba(34,197,94,0.15); color:var(--green); }
+.badge-red { background:rgba(239,68,68,0.15); color:var(--red); }
+.badge-yellow { background:rgba(245,158,11,0.15); color:var(--yellow); }
+.badge-blue { background:rgba(79,142,247,0.15); color:var(--accent); }
+.empty { text-align:center; padding:48px 20px; color:var(--text2); }
+.empty-icon { font-size:36px; margin-bottom:12px; }
 .loading { text-align:center; padding:32px; color:var(--text2); font-size:13px; }
+
+/* ── NOTICE ── */
+.notice-bar {
+  background: rgba(79,142,247,0.1); border:1px solid rgba(79,142,247,0.3);
+  border-radius:10px; padding:10px 16px; margin-bottom:20px;
+  font-size:12px; color:var(--accent); display:flex; align-items:center; gap:8px;
+}
+
+/* ── MOBILE ── */
+.hamburger-btn {
+  display:none; position:fixed; top:14px; left:14px; z-index:1100;
+  background:var(--accent2); border:none; border-radius:8px;
+  width:40px; height:40px; cursor:pointer;
+  align-items:center; justify-content:center;
+  flex-direction:column; gap:5px; padding:8px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.3);
+}
+.hamburger-btn span { display:block; width:22px; height:2px; background:white; border-radius:2px; }
+.sidebar-overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,0.4); z-index:999;
+}
+
+@media(max-width:768px) {
+  .sidebar {
+    position:fixed !important; left:0; top:0; bottom:0; z-index:1000;
+    transform:translateX(-240px); transition:transform 0.3s ease;
+    width:220px !important; min-width:220px !important;
+  }
+  .sidebar.open { transform:translateX(0) !important; }
+  .main-content { margin-left:0; padding:60px 16px 20px; width:100%; }
+  .stats-grid { grid-template-columns:1fr 1fr; }
+  .hamburger-btn { display:flex !important; }
+  .sidebar-overlay.open { display:block; }
+}
 </style>
 </head>
 <body>
+
+<button class="hamburger-btn" id="hamburgerBtn"><span></span><span></span><span></span></button>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <!-- LOGIN -->
 <div id="loginPage">
   <div class="login-box">
     <div class="login-logo">회계 <span>Manager</span></div>
     <div class="login-sub">회사 재무 관리 시스템</div>
-    <div class="form-group">
-      <label class="form-label">이메일</label>
-      <input class="form-input" id="loginEmail" type="email" placeholder="example@email.com" />
-    </div>
-    <div class="form-group">
-      <label class="form-label">비밀번호</label>
-      <input class="form-input" id="loginPw" type="password" placeholder="••••••••" />
-    </div>
+    <div class="error-msg" id="loginError">비밀번호가 올바르지 않습니다.</div>
+    <label class="form-label">비밀번호</label>
+    <input class="form-input" type="password" id="loginPw" placeholder="비밀번호 입력">
     <button class="btn-primary" onclick="doLogin()">로그인</button>
-    <div class="login-error" id="loginError">이메일 또는 비밀번호가 올바르지 않습니다.</div>
   </div>
 </div>
 
 <!-- APP -->
 <div id="appPage">
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <div class="sidebar-logo">
-      <div class="sidebar-logo-title">회계 <span>Manager</span></div>
+  <div class="app-layout">
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-title">회계 <span>Manager</span></div>
+      </div>
+      <div class="sidebar-user">
+        <div class="user-name">호겸</div>
+        <span class="user-role role-admin">관리자</span>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">메인</div>
+        <div class="nav-item active" onclick="showPage('dashboard',this)">
+          <span class="nav-icon">📊</span> 대시보드
+        </div>
+        <div class="nav-section">재무</div>
+        <div class="nav-item" onclick="showPage('revenue',this)">
+          <span class="nav-icon">💰</span> 매출
+        </div>
+        <div class="nav-item" onclick="showPage('purchase',this)">
+          <span class="nav-icon">🛒</span> 매입
+        </div>
+        <div class="nav-item" onclick="showPage('expense',this)">
+          <span class="nav-icon">📤</span> 지출
+        </div>
+        <div class="nav-section">인사</div>
+        <div class="nav-item" onclick="showPage('salary',this)">
+          <span class="nav-icon">👥</span> 급여
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn-logout" onclick="doLogout()">로그아웃</button>
+      </div>
     </div>
-    <div class="sidebar-user">
-      <div class="user-name" id="sidebarName">-</div>
-      <span class="user-role" id="sidebarRole">-</span>
-    </div>
-    <nav class="sidebar-nav">
-      <div class="nav-section">메인</div>
-      <div class="nav-item active" onclick="showPage('dashboard')">
-        <span class="nav-icon">📊</span> 대시보드
-      </div>
-      <div class="nav-section">재무</div>
-      <div class="nav-item" onclick="showPage('revenue')">
-        <span class="nav-icon">💰</span> 매출
-      </div>
-      <div class="nav-item" onclick="showPage('purchase')">
-        <span class="nav-icon">🛒</span> 매입
-      </div>
-      <div class="nav-item" onclick="showPage('expense')">
-        <span class="nav-icon">📤</span> 지출
-      </div>
-      <div class="nav-section">인사</div>
-      <div class="nav-item" onclick="showPage('salary')">
-        <span class="nav-icon">👥</span> 급여
-      </div>
-    </nav>
-    <div class="sidebar-footer">
-      <button class="btn-logout" onclick="doLogout()">로그아웃</button>
-    </div>
-  </div>
 
-  <!-- MAIN -->
-  <div class="main-content">
+    <div class="main-content">
 
-    <!-- DASHBOARD -->
-    <div class="page active" id="page-dashboard">
-      <div class="page-header">
-        <div class="page-title">대시보드</div>
-        <div class="page-sub" id="dashMonth">-</div>
-      </div>
-      <div class="filter-bar">
-        <input type="month" id="dashMonthPicker" onchange="loadDashboard()" />
-      </div>
-      <div class="stats-grid">
-        <div class="stat-card green">
-          <div class="stat-icon">💰</div>
-          <div class="stat-label">이번 달 매출</div>
-          <div class="stat-value green" id="statRevenue">-</div>
+      <!-- 대시보드 -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-header">
+          <div>
+            <div class="page-title">대시보드</div>
+            <div class="page-subtitle" id="dashMonth"></div>
+          </div>
+          <div class="month-picker-wrap">
+            <input type="month" id="dashMonthPicker" onchange="loadDashboard()">
+          </div>
         </div>
-        <div class="stat-card red">
-          <div class="stat-icon">🛒</div>
-          <div class="stat-label">이번 달 매입</div>
-          <div class="stat-value red" id="statPurchase">-</div>
+        <div class="notice-bar">📋 Google Sheets에 데이터를 입력하면 이 화면에 자동 반영됩니다.</div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-label">이번 달 매출</div>
+            <div class="stat-value amount-pos" id="statRevenue">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🛒</div>
+            <div class="stat-label">이번 달 매입</div>
+            <div class="stat-value amount-neg" id="statPurchase">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📤</div>
+            <div class="stat-label">이번 달 지출</div>
+            <div class="stat-value amount-neg" id="statExpense">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">💳</div>
+            <div class="stat-label">잔액</div>
+            <div class="stat-value" id="statBalance">-</div>
+          </div>
         </div>
-        <div class="stat-card yellow">
-          <div class="stat-icon">📤</div>
-          <div class="stat-label">이번 달 지출</div>
-          <div class="stat-value yellow" id="statExpense">-</div>
-        </div>
-        <div class="stat-card blue">
-          <div class="stat-icon">📈</div>
-          <div class="stat-label">순이익 (매출-매입-지출)</div>
-          <div class="stat-value blue" id="statProfit">-</div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header"><div class="card-title">최근 거래 내역</div></div>
         <div class="table-wrap">
+          <div class="table-header">
+            <div class="table-title">최근 거래 내역</div>
+          </div>
           <table>
             <thead><tr><th>날짜</th><th>구분</th><th>카테고리</th><th>내용</th><th>금액</th></tr></thead>
             <tbody id="recentTbody"><tr><td colspan="5" class="loading">불러오는 중...</td></tr></tbody>
           </table>
         </div>
       </div>
-    </div>
 
-    <!-- REVENUE -->
-    <div class="page" id="page-revenue">
-      <div class="page-header">
-        <div class="page-title">매출 관리</div>
-        <div class="page-sub">매출 내역 조회 및 등록</div>
-      </div>
-      <div class="filter-bar">
-        <input type="month" id="revMonthPicker" onchange="loadRevenue()" />
-        <button class="btn-sm btn-accent" id="btnAddRevenue" onclick="openModal('revenue')">+ 매출 추가</button>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">매출 내역</div>
-          <div class="stat-value green" id="revTotal" style="font-size:18px;">-</div>
+      <!-- 매출 -->
+      <div class="page" id="page-revenue">
+        <div class="page-header">
+          <div>
+            <div class="page-title">매출 관리</div>
+            <div class="page-subtitle">매출 내역 조회</div>
+          </div>
+          <div class="month-picker-wrap">
+            <input type="month" id="revMonthPicker" onchange="loadRevenue()">
+          </div>
         </div>
         <div class="table-wrap">
+          <div class="table-header">
+            <div class="table-title">매출 내역</div>
+            <div class="table-total">합계 <span id="revTotal">0원</span></div>
+          </div>
           <table>
-            <thead><tr><th>날짜</th><th>카테고리</th><th>내용</th><th>금액</th><th></th></tr></thead>
+            <thead><tr><th>날짜</th><th>카테고리</th><th>거래처</th><th>내용</th><th>금액</th></tr></thead>
             <tbody id="revTbody"><tr><td colspan="5" class="loading">불러오는 중...</td></tr></tbody>
           </table>
         </div>
       </div>
-    </div>
 
-    <!-- PURCHASE -->
-    <div class="page" id="page-purchase">
-      <div class="page-header">
-        <div class="page-title">매입 관리</div>
-        <div class="page-sub">매입 내역 조회 및 등록</div>
-      </div>
-      <div class="filter-bar">
-        <input type="month" id="purMonthPicker" onchange="loadPurchase()" />
-        <button class="btn-sm btn-accent" id="btnAddPurchase" onclick="openModal('purchase')">+ 매입 추가</button>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">매입 내역</div>
-          <div class="stat-value red" id="purTotal" style="font-size:18px;">-</div>
+      <!-- 매입 -->
+      <div class="page" id="page-purchase">
+        <div class="page-header">
+          <div>
+            <div class="page-title">매입 관리</div>
+            <div class="page-subtitle">매입 내역 조회</div>
+          </div>
+          <div class="month-picker-wrap">
+            <input type="month" id="purMonthPicker" onchange="loadPurchase()">
+          </div>
         </div>
         <div class="table-wrap">
+          <div class="table-header">
+            <div class="table-title">매입 내역</div>
+            <div class="table-total">합계 <span id="purTotal">0원</span></div>
+          </div>
           <table>
-            <thead><tr><th>날짜</th><th>카테고리</th><th>내용</th><th>금액</th><th></th></tr></thead>
+            <thead><tr><th>날짜</th><th>카테고리</th><th>거래처</th><th>내용</th><th>금액</th></tr></thead>
             <tbody id="purTbody"><tr><td colspan="5" class="loading">불러오는 중...</td></tr></tbody>
           </table>
         </div>
       </div>
-    </div>
 
-    <!-- EXPENSE -->
-    <div class="page" id="page-expense">
-      <div class="page-header">
-        <div class="page-title">지출 관리</div>
-        <div class="page-sub">지출 내역 조회 및 등록</div>
-      </div>
-      <div class="filter-bar">
-        <input type="month" id="expMonthPicker" onchange="loadExpense()" />
-        <button class="btn-sm btn-accent" id="btnAddExpense" onclick="openModal('expense')">+ 지출 추가</button>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">지출 내역</div>
-          <div class="stat-value yellow" id="expTotal" style="font-size:18px;">-</div>
+      <!-- 지출 -->
+      <div class="page" id="page-expense">
+        <div class="page-header">
+          <div>
+            <div class="page-title">지출 관리</div>
+            <div class="page-subtitle">지출 내역 조회</div>
+          </div>
+          <div class="month-picker-wrap">
+            <input type="month" id="expMonthPicker" onchange="loadExpense()">
+          </div>
         </div>
         <div class="table-wrap">
+          <div class="table-header">
+            <div class="table-title">지출 내역</div>
+            <div class="table-total">합계 <span id="expTotal">0원</span></div>
+          </div>
           <table>
-            <thead><tr><th>날짜</th><th>카테고리</th><th>내용</th><th>금액</th><th></th></tr></thead>
+            <thead><tr><th>날짜</th><th>카테고리</th><th>지출처</th><th>내용</th><th>금액</th></tr></thead>
             <tbody id="expTbody"><tr><td colspan="5" class="loading">불러오는 중...</td></tr></tbody>
           </table>
         </div>
       </div>
-    </div>
 
-    <!-- SALARY -->
-    <div class="page" id="page-salary">
-      <div class="page-header">
-        <div class="page-title">급여 관리</div>
-        <div class="page-sub">월별 급여 내역 조회</div>
-      </div>
-      <div class="filter-bar">
-        <input type="month" id="salMonthPicker" onchange="loadSalary()" />
-        <button class="btn-sm btn-accent" id="btnAddSalary" onclick="openModal('salary')">+ 급여 추가</button>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">급여 내역</div>
-          <div class="stat-value blue" id="salTotal" style="font-size:18px;">-</div>
+      <!-- 급여 -->
+      <div class="page" id="page-salary">
+        <div class="page-header">
+          <div>
+            <div class="page-title">급여 관리</div>
+            <div class="page-subtitle">월별 급여 내역 조회</div>
+          </div>
+          <div class="month-picker-wrap">
+            <input type="month" id="salMonthPicker" onchange="loadSalary()">
+          </div>
         </div>
         <div class="table-wrap">
+          <div class="table-header">
+            <div class="table-title">급여 내역</div>
+            <div class="table-total">실수령 합계 <span id="salTotal">0원</span></div>
+          </div>
           <table>
-            <thead><tr><th>이름</th><th>기본급</th><th>보너스</th><th>공제</th><th>실수령액</th><th>메모</th><th></th></tr></thead>
-            <tbody id="salTbody"><tr><td colspan="7" class="loading">불러오는 중...</td></tr></tbody>
+            <thead><tr><th>이름</th><th>기본급</th><th>보너스</th><th>공제</th><th>실수령액</th><th>메모</th></tr></thead>
+            <tbody id="salTbody"><tr><td colspan="6" class="loading">불러오는 중...</td></tr></tbody>
           </table>
         </div>
       </div>
-    </div>
 
-  </div>
-</div>
-
-<!-- MODAL -->
-<div class="modal-bg" id="modalBg">
-  <div class="modal">
-    <div class="modal-title" id="modalTitle">항목 추가</div>
-    <div id="modalBody"></div>
-    <div class="modal-footer">
-      <button class="btn-sm btn-outline" onclick="closeModal()">취소</button>
-      <button class="btn-sm btn-accent" onclick="submitModal()">저장</button>
-    </div>
-  </div>
-</div>
+    </div><!-- /main-content -->
+  </div><!-- /app-layout -->
+</div><!-- /appPage -->
 
 <script>
-// ── SUPABASE ──
-const SUPABASE_URL = 'https://grgfpptjxnpcumaswoot.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdyZ2ZwcHRqeG5wY3VtYXN3b290Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNTY4NDQsImV4cCI6MjA5MTczMjg0NH0.fzhNwAhoHRUF2OVQgBolHvroEKQylD_fAWJmxdfslAI'; // ← 여기에 anon key 붙여넣기
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-let currentUser = null;
-let currentProfile = null;
-let modalType = '';
+// ── 설정 ──
+const API_URL = 'https://script.google.com/macros/s/AKfycbxyjDZyWCzcofdJAEXttacmjdByeIFEC8SaXzA7giOtZO3zW5pNaGZaJ0RNvgHkmaSAvg/exec';
+const LOGIN_PW = 'glowvia1234'; // ← 원하시는 비밀번호로 변경 가능
 
 // ── HELPERS ──
 const now = new Date();
 const thisMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-const won = n => (n||0).toLocaleString('ko-KR') + '원';
+const won = n => (Number(n)||0).toLocaleString('ko-KR') + '원';
 const fmt = d => d ? d.replace(/-/g,'.') : '-';
 
+async function apiFetch(type, month) {
+  const url = `${API_URL}?type=${type}${month ? '&month='+month : ''}`;
+  const res = await fetch(url);
+  return res.json();
+}
+
 // ── AUTH ──
-async function doLogin() {
-  const email = document.getElementById('loginEmail').value.trim();
+function doLogin() {
   const pw = document.getElementById('loginPw').value;
   const err = document.getElementById('loginError');
-  err.style.display = 'none';
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
-  if (error) { err.style.display = 'block'; return; }
-  await initApp(data.user);
+  if (pw === LOGIN_PW) {
+    err.style.display = 'none';
+    sessionStorage.setItem('loggedIn','1');
+    initApp();
+  } else {
+    err.style.display = 'block';
+  }
 }
-document.getElementById('loginPw').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
-
-async function doLogout() {
-  await sb.auth.signOut();
+document.getElementById('loginPw').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+function doLogout() {
+  sessionStorage.removeItem('loggedIn');
   document.getElementById('appPage').style.display = 'none';
   document.getElementById('loginPage').style.display = 'flex';
-  currentUser = null; currentProfile = null;
 }
-
-async function initApp(user) {
-  currentUser = user;
-  const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
-  currentProfile = profile;
+function initApp() {
   document.getElementById('loginPage').style.display = 'none';
   document.getElementById('appPage').style.display = 'block';
-  document.getElementById('sidebarName').textContent = profile?.name || user.email;
-  const roleEl = document.getElementById('sidebarRole');
-  roleEl.textContent = profile?.role === 'admin' ? '관리자' : '직원';
-  roleEl.className = 'user-role ' + (profile?.role === 'admin' ? 'role-admin' : 'role-employee');
-
-  // 직원은 추가 버튼 숨김
-  if (profile?.role !== 'admin') {
-    ['btnAddRevenue','btnAddPurchase','btnAddExpense','btnAddSalary'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.style.display = 'none';
-    });
-  } else {
-    ['btnAddRevenue','btnAddPurchase','btnAddExpense','btnAddSalary'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.style.display = 'flex';
-    });
-  }
-
-  // 월 초기값
-  ['dashMonthPicker','revMonthPicker','purMonthPicker','expMonthPicker','salMonthPicker'].forEach(id => {
-    document.getElementById(id).value = thisMonth;
-  });
+  ['dashMonthPicker','revMonthPicker','purMonthPicker','expMonthPicker','salMonthPicker']
+    .forEach(id => { document.getElementById(id).value = thisMonth; });
   loadDashboard();
 }
-
-// ── SESSION CHECK ──
-sb.auth.getSession().then(({ data: { session } }) => {
-  if (session) initApp(session.user);
-});
+if (sessionStorage.getItem('loggedIn')) initApp();
 
 // ── NAVIGATION ──
-function showPage(name) {
+function showPage(name, el) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
-  event.currentTarget.classList.add('active');
-  const loaders = { dashboard: loadDashboard, revenue: loadRevenue, purchase: loadPurchase, expense: loadExpense, salary: loadSalary };
+  el.classList.add('active');
+  const loaders = { dashboard:loadDashboard, revenue:loadRevenue, purchase:loadPurchase, expense:loadExpense, salary:loadSalary };
   if (loaders[name]) loaders[name]();
+  // 모바일: 메뉴 클릭 후 사이드바 닫기
+  if (window.innerWidth <= 768) closeSidebar();
 }
 
 // ── DASHBOARD ──
 async function loadDashboard() {
   const month = document.getElementById('dashMonthPicker').value || thisMonth;
   document.getElementById('dashMonth').textContent = month.replace('-','년 ') + '월';
+  try {
+    const data = await apiFetch('dashboard', month);
+    const rev = data.revenue || 0;
+    const pur = data.purchase || 0;
+    const exp = data.expense || 0;
+    const carry = data.balance_carry || 0;
+    const balance = carry + rev - pur - exp;
+    document.getElementById('statRevenue').textContent = won(rev);
+    document.getElementById('statPurchase').textContent = won(pur);
+    document.getElementById('statExpense').textContent = won(exp);
+    const balEl = document.getElementById('statBalance');
+    balEl.textContent = won(balance);
+    balEl.style.color = balance >= 0 ? 'var(--green)' : 'var(--red)';
 
-  const uid = currentProfile?.role === 'admin' ? null : currentUser.id;
-
-  async function sumTable(table) {
-    let q = sb.from(table).select('amount').eq('month', month);
-    if (uid) q = q.eq('user_id', uid);
-    const { data } = await q;
-    return (data||[]).reduce((s,r) => s+r.amount, 0);
+    // 최근 내역: 매출+매입+지출 합쳐서 표시
+    const [rData, pData, eData] = await Promise.all([
+      apiFetch('revenue', month), apiFetch('purchase', month), apiFetch('expense', month)
+    ]);
+    let rows = [];
+    (rData.rows||[]).forEach(r => rows.push({...r, label:'매출', cls:'badge-green'}));
+    (pData.rows||[]).forEach(r => rows.push({...r, label:'매입', cls:'badge-red'}));
+    (eData.rows||[]).forEach(r => rows.push({...r, label:'지출', cls:'badge-yellow'}));
+    rows.sort((a,b) => b.date.localeCompare(a.date));
+    rows = rows.slice(0,10);
+    const tbody = document.getElementById('recentTbody');
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-icon">📭</div>내역이 없습니다</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td>${fmt(r.date)}</td>
+        <td><span class="badge ${r.cls}">${r.label}</span></td>
+        <td>${r.category||'-'}</td>
+        <td>${r.description||r.partner||'-'}</td>
+        <td class="${r.cls.includes('green')?'amount-pos':'amount-neg'}">${won(r.amount)}</td>
+      </tr>`).join('');
+  } catch(e) {
+    document.getElementById('recentTbody').innerHTML = '<tr><td colspan="5" class="loading">데이터를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.</td></tr>';
   }
-
-  const [rev, pur, exp] = await Promise.all([sumTable('revenues'), sumTable('purchases'), sumTable('expenses')]);
-  const profit = rev - pur - exp;
-
-  document.getElementById('statRevenue').textContent = won(rev);
-  document.getElementById('statPurchase').textContent = won(pur);
-  document.getElementById('statExpense').textContent = won(exp);
-  document.getElementById('statProfit').textContent = won(profit);
-  document.getElementById('statProfit').style.color = profit >= 0 ? 'var(--green)' : 'var(--red)';
-
-  // 최근 내역
-  const tbody = document.getElementById('recentTbody');
-  const tables = [
-    { name:'revenues', label:'매출', cls:'badge-green' },
-    { name:'purchases', label:'매입', cls:'badge-red' },
-    { name:'expenses', label:'지출', cls:'badge-yellow' },
-  ];
-  let rows = [];
-  for (const t of tables) {
-    let q = sb.from(t.name).select('date,category,description,amount').eq('month', month).order('date', {ascending:false}).limit(5);
-    if (uid) q = q.eq('user_id', uid);
-    const { data } = await q;
-    (data||[]).forEach(r => rows.push({...r, label:t.label, cls:t.cls}));
-  }
-  rows.sort((a,b) => b.date.localeCompare(a.date));
-  rows = rows.slice(0,10);
-
-  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-icon">📭</div>내역이 없습니다</div></td></tr>'; return; }
-  tbody.innerHTML = rows.map(r => `
-    <tr>
-      <td>${fmt(r.date)}</td>
-      <td><span class="badge ${r.cls}">${r.label}</span></td>
-      <td>${r.category}</td>
-      <td>${r.description||'-'}</td>
-      <td class="${r.cls.includes('green')?'amount-pos':'amount-neg'}">${won(r.amount)}</td>
-    </tr>`).join('');
 }
 
 // ── REVENUE ──
@@ -553,21 +476,23 @@ async function loadRevenue() {
   const month = document.getElementById('revMonthPicker').value || thisMonth;
   const tbody = document.getElementById('revTbody');
   tbody.innerHTML = '<tr><td colspan="5" class="loading">불러오는 중...</td></tr>';
-  let q = sb.from('revenues').select('*').eq('month', month).order('date', {ascending:false});
-  if (currentProfile?.role !== 'admin') q = q.eq('user_id', currentUser.id);
-  const { data } = await q;
-  const total = (data||[]).reduce((s,r)=>s+r.amount,0);
-  document.getElementById('revTotal').textContent = won(total);
-  if (!data?.length) { tbody.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-icon">💰</div>매출 내역이 없습니다</div></td></tr>'; return; }
-  tbody.innerHTML = data.map(r => `
-    <tr>
-      <td>${fmt(r.date)}</td>
-      <td><span class="badge badge-green">${r.category}</span></td>
-      <td>${r.description||'-'}</td>
-      <td class="amount-pos">${won(r.amount)}</td>
-      <td>${currentProfile?.role==='admin'?`<button class="btn-sm btn-danger" onclick="deleteRow('revenues','${r.id}',loadRevenue)">삭제</button>`:''}
-      </td>
-    </tr>`).join('');
+  try {
+    const data = await apiFetch('revenue', month);
+    const rows = (data.rows||[]).filter(r => !month || (r.month === month));
+    const total = rows.reduce((s,r) => s+(Number(r.amount)||0), 0);
+    document.getElementById('revTotal').textContent = won(total);
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-icon">💰</div>매출 내역이 없습니다</div></td></tr>'; return; }
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td>${fmt(r.date)}</td>
+        <td><span class="badge badge-green">${r.category||'-'}</span></td>
+        <td>${r.partner||'-'}</td>
+        <td>${r.description||'-'}</td>
+        <td class="amount-pos">${won(r.amount)}</td>
+      </tr>`).join('');
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="5" class="loading">오류가 발생했습니다.</td></tr>';
+  }
 }
 
 // ── PURCHASE ──
@@ -575,21 +500,23 @@ async function loadPurchase() {
   const month = document.getElementById('purMonthPicker').value || thisMonth;
   const tbody = document.getElementById('purTbody');
   tbody.innerHTML = '<tr><td colspan="5" class="loading">불러오는 중...</td></tr>';
-  let q = sb.from('purchases').select('*').eq('month', month).order('date', {ascending:false});
-  if (currentProfile?.role !== 'admin') q = q.eq('user_id', currentUser.id);
-  const { data } = await q;
-  const total = (data||[]).reduce((s,r)=>s+r.amount,0);
-  document.getElementById('purTotal').textContent = won(total);
-  if (!data?.length) { tbody.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-icon">🛒</div>매입 내역이 없습니다</div></td></tr>'; return; }
-  tbody.innerHTML = data.map(r => `
-    <tr>
-      <td>${fmt(r.date)}</td>
-      <td><span class="badge badge-red">${r.category}</span></td>
-      <td>${r.description||'-'}</td>
-      <td class="amount-neg">${won(r.amount)}</td>
-      <td>${currentProfile?.role==='admin'?`<button class="btn-sm btn-danger" onclick="deleteRow('purchases','${r.id}',loadPurchase)">삭제</button>`:''}
-      </td>
-    </tr>`).join('');
+  try {
+    const data = await apiFetch('purchase', month);
+    const rows = (data.rows||[]).filter(r => !month || (r.month === month));
+    const total = rows.reduce((s,r) => s+(Number(r.amount)||0), 0);
+    document.getElementById('purTotal').textContent = won(total);
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-icon">🛒</div>매입 내역이 없습니다</div></td></tr>'; return; }
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td>${fmt(r.date)}</td>
+        <td><span class="badge badge-red">${r.category||'-'}</span></td>
+        <td>${r.partner||'-'}</td>
+        <td>${r.description||'-'}</td>
+        <td class="amount-neg">${won(r.amount)}</td>
+      </tr>`).join('');
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="5" class="loading">오류가 발생했습니다.</td></tr>';
+  }
 }
 
 // ── EXPENSE ──
@@ -597,151 +524,60 @@ async function loadExpense() {
   const month = document.getElementById('expMonthPicker').value || thisMonth;
   const tbody = document.getElementById('expTbody');
   tbody.innerHTML = '<tr><td colspan="5" class="loading">불러오는 중...</td></tr>';
-  let q = sb.from('expenses').select('*').eq('month', month).order('date', {ascending:false});
-  if (currentProfile?.role !== 'admin') q = q.eq('user_id', currentUser.id);
-  const { data } = await q;
-  const total = (data||[]).reduce((s,r)=>s+r.amount,0);
-  document.getElementById('expTotal').textContent = won(total);
-  if (!data?.length) { tbody.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-icon">📤</div>지출 내역이 없습니다</div></td></tr>'; return; }
-  tbody.innerHTML = data.map(r => `
-    <tr>
-      <td>${fmt(r.date)}</td>
-      <td><span class="badge badge-yellow">${r.category}</span></td>
-      <td>${r.description||'-'}</td>
-      <td class="amount-neg">${won(r.amount)}</td>
-      <td>${currentProfile?.role==='admin'?`<button class="btn-sm btn-danger" onclick="deleteRow('expenses','${r.id}',loadExpense)">삭제</button>`:''}
-      </td>
-    </tr>`).join('');
+  try {
+    const data = await apiFetch('expense', month);
+    const rows = (data.rows||[]).filter(r => !month || (r.month === month));
+    const total = rows.reduce((s,r) => s+(Number(r.amount)||0), 0);
+    document.getElementById('expTotal').textContent = won(total);
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-icon">📤</div>지출 내역이 없습니다</div></td></tr>'; return; }
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td>${fmt(r.date)}</td>
+        <td><span class="badge badge-yellow">${r.category||'-'}</span></td>
+        <td>${r.partner||'-'}</td>
+        <td>${r.description||'-'}</td>
+        <td class="amount-neg">${won(r.amount)}</td>
+      </tr>`).join('');
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="5" class="loading">오류가 발생했습니다.</td></tr>';
+  }
 }
 
 // ── SALARY ──
 async function loadSalary() {
   const month = document.getElementById('salMonthPicker').value || thisMonth;
   const tbody = document.getElementById('salTbody');
-  tbody.innerHTML = '<tr><td colspan="7" class="loading">불러오는 중...</td></tr>';
-  let q = sb.from('salaries').select('*, profiles(name)').eq('month', month);
-  if (currentProfile?.role !== 'admin') q = q.eq('user_id', currentUser.id);
-  const { data } = await q;
-  const total = (data||[]).reduce((s,r)=>s+(r.base_salary+r.bonus-r.deduction),0);
-  document.getElementById('salTotal').textContent = won(total);
-  if (!data?.length) { tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><div class="empty-icon">👥</div>급여 내역이 없습니다</div></td></tr>'; return; }
-  tbody.innerHTML = data.map(r => {
-    const net = r.base_salary + r.bonus - r.deduction;
-    return `<tr>
-      <td>${r.profiles?.name||'-'}</td>
-      <td>${won(r.base_salary)}</td>
-      <td class="amount-pos">+${won(r.bonus)}</td>
-      <td class="amount-neg">-${won(r.deduction)}</td>
-      <td class="amount-pos" style="font-weight:700;">${won(net)}</td>
-      <td>${r.note||'-'}</td>
-      <td>${currentProfile?.role==='admin'?`<button class="btn-sm btn-danger" onclick="deleteRow('salaries','${r.id}',loadSalary)">삭제</button>`:''}
-      </td>
-    </tr>`;
-  }).join('');
-}
-
-// ── MODAL ──
-function openModal(type) {
-  modalType = type;
-  const titles = { revenue:'매출 추가', purchase:'매입 추가', expense:'지출 추가', salary:'급여 추가' };
-  document.getElementById('modalTitle').textContent = titles[type];
-  const today = new Date().toISOString().split('T')[0];
-
-  let body = '';
-  if (type === 'salary') {
-    body = `
-      <div class="form-group" style="margin-bottom:14px;">
-        <label class="form-label">월</label>
-        <input class="form-input" id="mMonth" type="month" value="${thisMonth}" />
-      </div>
-      <div class="form-group" style="margin-bottom:14px;">
-        <label class="form-label">직원 이름</label>
-        <input class="form-input" id="mEmpName" placeholder="이름 입력" />
-      </div>
-      <div class="form-grid" style="margin-bottom:14px;">
-        <div><label class="form-label">기본급</label><input class="form-input" id="mBase" type="number" placeholder="0" /></div>
-        <div><label class="form-label">보너스</label><input class="form-input" id="mBonus" type="number" placeholder="0" /></div>
-      </div>
-      <div class="form-grid" style="margin-bottom:14px;">
-        <div><label class="form-label">공제액</label><input class="form-input" id="mDed" type="number" placeholder="0" /></div>
-        <div><label class="form-label">메모</label><input class="form-input" id="mNote" placeholder="메모" /></div>
-      </div>`;
-  } else {
-    const cats = {
-      revenue: ['용역매출','제품매출','기타매출'],
-      purchase: ['원자재','상품매입','외주비','기타매입'],
-      expense: ['임대료','인건비','통신비','교통비','식비','소모품','기타지출'],
-    };
-    body = `
-      <div class="form-group" style="margin-bottom:14px;">
-        <label class="form-label">날짜</label>
-        <input class="form-input" id="mDate" type="date" value="${today}" />
-      </div>
-      <div class="form-group" style="margin-bottom:14px;">
-        <label class="form-label">카테고리</label>
-        <select class="form-select" id="mCat">
-          ${cats[type].map(c=>`<option>${c}</option>`).join('')}
-        </select>
-      </div>
-      <div class="form-group" style="margin-bottom:14px;">
-        <label class="form-label">내용</label>
-        <input class="form-input" id="mDesc" placeholder="거래 내용" />
-      </div>
-      <div class="form-group" style="margin-bottom:14px;">
-        <label class="form-label">금액 (원)</label>
-        <input class="form-input" id="mAmount" type="number" placeholder="0" />
-      </div>`;
-  }
-  document.getElementById('modalBody').innerHTML = body;
-  document.getElementById('modalBg').classList.add('open');
-}
-
-function closeModal() { document.getElementById('modalBg').classList.remove('open'); }
-
-async function submitModal() {
-  if (modalType === 'salary') {
-    const month = document.getElementById('mMonth').value;
-    const empName = document.getElementById('mEmpName').value.trim();
-    const base = parseInt(document.getElementById('mBase').value)||0;
-    const bonus = parseInt(document.getElementById('mBonus').value)||0;
-    const ded = parseInt(document.getElementById('mDed').value)||0;
-    const note = document.getElementById('mNote').value;
-    if (!empName || !base) return alert('이름과 기본급을 입력해주세요.');
-
-    // 직원 프로필 조회
-    const { data: prof } = await sb.from('profiles').select('id').eq('name', empName).single();
-    if (!prof) return alert('해당 이름의 직원이 없습니다. 직원을 먼저 등록해주세요.');
-
-    await sb.from('salaries').insert({ user_id: prof.id, month, base_salary:base, bonus, deduction:ded, note });
-    closeModal(); loadSalary();
-  } else {
-    const tableMap = { revenue:'revenues', purchase:'purchases', expense:'expenses' };
-    const date = document.getElementById('mDate').value;
-    const cat = document.getElementById('mCat').value;
-    const desc = document.getElementById('mDesc').value;
-    const amount = parseInt(document.getElementById('mAmount').value)||0;
-    if (!date || !amount) return alert('날짜와 금액을 입력해주세요.');
-    const month = date.substring(0,7);
-    await sb.from(tableMap[modalType]).insert({
-      user_id: currentUser.id, date, category:cat, description:desc, amount, month
-    });
-    closeModal();
-    const loaders = { revenue:loadRevenue, purchase:loadPurchase, expense:loadExpense };
-    loaders[modalType]();
+  tbody.innerHTML = '<tr><td colspan="6" class="loading">불러오는 중...</td></tr>';
+  try {
+    const data = await apiFetch('salary', month);
+    const rows = (data.rows||[]).filter(r => !month || (r.month === month));
+    const total = rows.reduce((s,r) => s+(Number(r.net)||0), 0);
+    document.getElementById('salTotal').textContent = won(total);
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-icon">👥</div>급여 내역이 없습니다</div></td></tr>'; return; }
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td>${r.name||'-'}</td>
+        <td>${won(r.base)}</td>
+        <td class="amount-pos">+${won(r.bonus)}</td>
+        <td class="amount-neg">-${won(r.deduction)}</td>
+        <td class="amount-pos" style="font-weight:700;">${won(r.net)}</td>
+        <td>${r.memo||'-'}</td>
+      </tr>`).join('');
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="6" class="loading">오류가 발생했습니다.</td></tr>';
   }
 }
 
-// ── DELETE ──
-window.deleteRow = async (table, id, reloadFn) => {
-  if (!confirm('삭제하시겠습니까?')) return;
-  await sb.from(table).delete().eq('id', id);
-  reloadFn();
-};
-
-// ── MODAL CLOSE ON BG CLICK ──
-document.getElementById('modalBg').addEventListener('click', e => {
-  if (e.target === document.getElementById('modalBg')) closeModal();
+// ── 모바일 햄버거 메뉴 ──
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
+document.getElementById('hamburgerBtn').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
 });
+document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
 </script>
 </body>
 </html>
