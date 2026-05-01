@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>회계 관리 시스템</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#38BDF8">                                                            
+  <meta name="mobile-web-app-capable" content="yes">                                                     
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">                        
+  <meta name="apple-mobile-web-app-title" content="글로비아">                                            
+  <link rel="apple-touch-icon" href="icon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=DM+Serif+Display:ital@1&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -586,5 +593,9 @@ document.getElementById('hamburgerBtn').addEventListener('click', () => {
 });
 document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
 </script>
+   if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/accounting_app/sw.js');
+  }
+  </script>
 </body>
 </html>
